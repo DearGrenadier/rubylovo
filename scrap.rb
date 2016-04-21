@@ -3,16 +3,17 @@ require 'open-uri'
 require 'json'
 require 'pry'
 
-LETTERS  = ('A'..'Z').to_a
+LETTERS  = (ARGV[0]..ARGV[1]).to_a
 
 ENDPOINT = 'https://rubygems.org/gems?letter='.freeze
 
-RESULT = {}
+
 
 LETTERS.each do |letter|
-  FILE = File.open('data.json','w')
   i = 1
+  RESULT = {}
   RESULT[letter] = []
+
   loop do
     puts "PAGE #{i}"
     puts ENDPOINT + letter + "&page=#{i}"
@@ -23,5 +24,10 @@ LETTERS.each do |letter|
     end
     i = i + 1
   end
-  FILE.write(JSON.parse(File.read('data.json')).merge(RESULT[letter]).to_json).close
+
+  data = JSON.parse(File.read('data.json')).merge(RESULT).to_json
+  File.open('data.json', 'w') do |f|
+    f.write(data)
+    f.close
+  end
 end
